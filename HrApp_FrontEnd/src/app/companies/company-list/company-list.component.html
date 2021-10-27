@@ -1,0 +1,64 @@
+<h1>A list of the largest companies in the world</h1>
+<div *ngIf="(accountService.currentUser$ | async) as user" >
+  <div class=" container">
+    <div class=" row">
+      <div class="col-md-4">
+        <mat-card class="example-card">
+          <mat-card-title>Add a new company</mat-card-title>
+          <mat-card-content>
+            <p>
+              <mat-form-field appearance="outline">
+                <mat-label>Company Name</mat-label>
+                <input #companyName matInput placeholder="Company Name">
+                <mat-icon matSuffix>sentiment_very_satisfied</mat-icon>
+              </mat-form-field>
+            </p>
+            <p>
+              <mat-form-field appearance="outline">
+                <mat-label>Date Of Establishment</mat-label>
+                <input #companyDate matInput placeholder="Date Of Establishment">
+                <mat-icon matSuffix>sentiment_very_satisfied</mat-icon>
+              </mat-form-field>
+            </p>
+            <p>
+              <mat-form-field appearance="outline">
+                <mat-label>Company Address</mat-label>
+                <input #companyAddress matInput placeholder="Company Address">
+                <mat-icon matSuffix>sentiment_very_satisfied</mat-icon>
+              </mat-form-field>
+            </p>
+            <p>
+              <mat-form-field appearance="outline">
+                <mat-label>Company Information</mat-label>
+                <input #companyInfo matInput placeholder="Company Information">
+                <mat-icon matSuffix>sentiment_very_satisfied</mat-icon>
+              </mat-form-field>
+            </p>
+            <p>
+              <mat-form-field appearance="outline">
+                <mat-label>Company Logo</mat-label>
+                <input matInput placeholder="Company Logo">
+                <mat-icon matSuffix>sentiment_very_satisfied</mat-icon>
+              </mat-form-field>
+            </p>
+          </mat-card-content>
+          <mat-divider inset></mat-divider>
+          <mat-card-actions>
+            <button mat-button (click)="addCompany(companyName.value,companyAddress.value, companyInfo.value)">
+              <mat-icon>check_circle</mat-icon>Save
+            </button>
+          </mat-card-actions>
+          <mat-card-footer>
+            <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+          </mat-card-footer>
+        </mat-card>
+
+      </div>
+      <div class="col-md-8">
+        <div *ngFor="let company of companies">
+          <app-company-card [company]="company"></app-company-card>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

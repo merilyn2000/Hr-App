@@ -1,0 +1,15 @@
+<mat-toolbar color="primary">
+  <button mat-button routerLink="/company-list"><mat-icon>home</mat-icon>Home</button>
+  <span class="example-spacer"></span>
+
+  <div *ngIf="(accountService.currentUser$ | async) as user">
+    <p>Welcome {{user.username | uppercase}}</p>
+    <button type="submit" mat-button (click)="logout()">Logout</button>
+  </div>
+
+  <div *ngIf="(accountService.currentUser$ | async) === undefined || (accountService.currentUser$ | async) === null">
+    <button mat-button routerLink="/login"><mat-icon>account_circle</mat-icon>Login</button>
+    <button mat-button routerLink="/register"><mat-icon>assignment_ind</mat-icon>Register</button>
+  </div>
+
+</mat-toolbar>

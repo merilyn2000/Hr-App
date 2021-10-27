@@ -1,0 +1,41 @@
+<div class=" card">
+  <mat-card class="example-card">
+    <mat-card-title>Edit this company</mat-card-title>
+    <mat-card-content>
+      <p>
+        <mat-form-field appearance="outline">
+          <mat-label>Company Name</mat-label>
+          <input #companyName matInput placeholder="Company Name">
+          <mat-icon matSuffix>sentiment_very_satisfied</mat-icon>
+        </mat-form-field>
+      </p>
+      <p>
+        <mat-form-field appearance="outline">
+          <mat-label>Company Address</mat-label>
+          <input #companyAddress matInput placeholder="Company Address">
+          <mat-icon matSuffix>sentiment_very_satisfied</mat-icon>
+        </mat-form-field>
+      </p>
+      <p>
+        <mat-form-field appearance="outline">
+          <mat-label>Company Information</mat-label>
+          <input #companyInfo matInput placeholder="Company Information">
+          <mat-icon matSuffix>sentiment_very_satisfied</mat-icon>
+        </mat-form-field>
+      </p>
+    </mat-card-content>
+    <mat-divider inset></mat-divider>
+    <mat-card-actions>
+      <button mat-button routerLink="/company-list"
+        (click)="editCompany(companyName.value, companyAddress.value, companyInfo.value)">
+        <mat-icon>check_circle</mat-icon>
+        Save
+      </button>
+      <button mat-button (click)="goBack()"><mat-icon>highlight_off</mat-icon>Cancel</button>
+    </mat-card-actions>
+    <mat-card-footer>
+      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    </mat-card-footer>
+  </mat-card>
+
+</div>

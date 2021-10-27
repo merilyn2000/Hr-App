@@ -1,0 +1,63 @@
+<div class=" container" style=" margin-top: 40px">
+  <div class=" row">
+    <div class="col-md-5">
+      <mat-card class="example-card">
+        <mat-card-title>Add a new employee for this company</mat-card-title>
+        <mat-card-content>
+          <p>
+            <mat-form-field appearance="outline">
+              <mat-label>First Name</mat-label>
+              <input #firstName matInput placeholder="First Name">
+              <mat-icon matSuffix>sentiment_very_satisfied</mat-icon>
+            </mat-form-field>
+          </p>
+          <p>
+            <mat-form-field appearance="outline">
+              <mat-label>Last Name</mat-label>
+              <input #lastName matInput placeholder="Last Name">
+              <mat-icon matSuffix>sentiment_very_satisfied</mat-icon>
+            </mat-form-field>
+          </p>
+          <p>
+            <mat-form-field appearance="outline">
+              <mat-label>Personal Identification Number</mat-label>
+              <input #PersonalIdentificationNumber matInput placeholder="Personal Identification Number">
+              <mat-icon matSuffix>sentiment_very_satisfied</mat-icon>
+            </mat-form-field>
+          </p>
+          <p>
+            <mat-form-field appearance="outline">
+              <mat-label>Birth Date</mat-label>
+              <input #birthDate matInput placeholder="Birth Date">
+              <mat-icon matSuffix>sentiment_very_satisfied</mat-icon>
+            </mat-form-field>
+          </p>
+          <p>
+            <mat-form-field appearance="outline">
+              <mat-label>Birth Place</mat-label>
+              <input #birthPlace matInput placeholder="Birth Place">
+              <mat-icon matSuffix>sentiment_very_satisfied</mat-icon>
+            </mat-form-field>
+          </p>
+        </mat-card-content>
+        <mat-divider inset></mat-divider>
+        <mat-card-actions>
+          <button mat-button (click)="addEmployee(firstName.value, lastName.value, PersonalIdentificationNumber.value, birthPlace.value)">
+            <mat-icon>check_circle</mat-icon>
+            Save
+          </button>
+          <button mat-button (click)="goBack()"><mat-icon>reply</mat-icon>Go Back</button>
+        </mat-card-actions>
+        <mat-card-footer>
+          <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+        </mat-card-footer>
+      </mat-card>
+
+    </div>
+    <div class="col-md-7">
+      <div *ngFor="let employee of employees">
+        <app-employee-card [employee]="employee"></app-employee-card>
+      </div>
+    </div>
+  </div>
+</div>
