@@ -1,4 +1,4 @@
-﻿namespace HrApp_WebAPI.Entities
+﻿namespace HrApp_WebAPI.Data.Entities.Companies.Employees
 {
     public class EmployeeContacts
     {

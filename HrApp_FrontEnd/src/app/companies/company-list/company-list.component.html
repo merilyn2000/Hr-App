@@ -37,14 +37,15 @@
             <p>
               <mat-form-field appearance="outline">
                 <mat-label>Company Logo</mat-label>
-                <input matInput placeholder="Company Logo">
+                <input #companyLogo matInput placeholder="Company Logo">
                 <mat-icon matSuffix>sentiment_very_satisfied</mat-icon>
               </mat-form-field>
             </p>
           </mat-card-content>
           <mat-divider inset></mat-divider>
           <mat-card-actions>
-            <button mat-button (click)="addCompany(companyName.value,companyAddress.value, companyInfo.value)">
+            <button mat-button (click)="addCompany(companyName.value, companyAddress.value,
+                                                    companyInfo.value, companyLogo.value)">
               <mat-icon>check_circle</mat-icon>Save
             </button>
           </mat-card-actions>

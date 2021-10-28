@@ -1,4 +1,5 @@
-﻿using HrApp_WebAPI.Entities;
+﻿using HrApp_WebAPI.Data.Entities.Companies;
+using HrApp_WebAPI.Data.Entities.Users;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
@@ -14,6 +15,8 @@ namespace HrApp_WebAPI.Extensions
         {
             var builder = services.AddIdentityCore<User>(u =>
             {
+                u.Password.RequireDigit = false;
+                u.Password.RequireUppercase = false;
                 u.Password.RequireNonAlphanumeric = false;
                 u.Password.RequiredLength = 3;
                 u.User.RequireUniqueEmail = true;

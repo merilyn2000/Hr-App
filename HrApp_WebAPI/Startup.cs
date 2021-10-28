@@ -1,5 +1,9 @@
-using HrApp_WebAPI.Data.Entities;
-using HrApp_WebAPI.Entities;
+using HrApp_WebAPI.BusinessLogic.Interfaces;
+using HrApp_WebAPI.BusinessLogic.Services;
+using HrApp_WebAPI.Data.Entities.Companies;
+using HrApp_WebAPI.Data.Entities.Companies.Employees;
+using HrApp_WebAPI.Data.Entities.Pagination;
+using HrApp_WebAPI.Data.Entities.Users;
 using HrApp_WebAPI.Extensions;
 using HrApp_WebAPI.Helpers;
 using HrApp_WebAPI.Interfaces;
@@ -21,17 +25,17 @@ namespace Mini_HR_App
     {
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;
+            _config = configuration;
         }
 
-        public IConfiguration Configuration { get; }
+        public IConfiguration _config { get; }
 
         public void ConfigureServices(IServiceCollection services)
         {
 
             services.AddControllers();
             services.AddDbContext<CompanyContext>(opts =>
-                                            opts.UseSqlServer(Configuration.GetConnectionString("sqlConnection")));
+                                            opts.UseSqlServer(_config.GetConnectionString("sqlConnection")));
 
             services.AddIdentity<User, IdentityRole>()
                 .AddEntityFrameworkStores<CompanyContext>()
@@ -42,13 +46,14 @@ namespace Mini_HR_App
                 o.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
                 o.JsonSerializerOptions.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;
             });
+
             services.AddCors();
             IdentityModelEventSource.ShowPII = true;
             services.AddAuthentication();
             services.AddAuthorization();
 
             services.AddIdentityService();
-            services.AddJwtToken(Configuration);
+            services.AddJwtToken(_config);
 
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<ICompanyService, CompanyService>();
@@ -64,12 +69,12 @@ namespace Mini_HR_App
             {
                 app.UseDeveloperExceptionPage();
             }
+
             app.UseAuthentication();
 
             app.ConfigureCustomExceptionMiddleware();
 
             app.UseHttpsRedirection();
-
             app.UseRouting();
 
             app.UseCors(policy => policy

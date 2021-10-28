@@ -1,12 +1,14 @@
-﻿using System;
+﻿using HrApp_WebAPI.Data.Entities;
+using HrApp_WebAPI.Data.Entities.Companies;
+using System;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Reflection;
 using System.Text;
 
-namespace HrApp_WebAPI.Entities
+namespace HrApp_WebAPI.Data.Entities.Pagination
 {
-    public class Sorting
+    public class Sorting : ISorting
     {
         public void ApplySort(ref IQueryable<Company> companies, string orderByQueryString)
         {

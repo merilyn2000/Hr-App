@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
+using HrApp_WebAPI.Data.Entities.Companies;
+using HrApp_WebAPI.Data.Entities.Companies.Employees;
 using HrApp_WebAPI.DTOs;
-using HrApp_WebAPI.Entities;
 
 namespace HrApp_WebAPI.Helpers
 {

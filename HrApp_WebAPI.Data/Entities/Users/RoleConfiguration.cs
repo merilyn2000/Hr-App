@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 
-namespace HrApp_WebAPI
+namespace HrApp_WebAPI.Data.Entities.Users
 {
     internal class RoleConfiguration : IEntityTypeConfiguration<IdentityRole>
     {

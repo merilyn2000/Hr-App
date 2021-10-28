@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace HrApp_WebAPI.Data.Entities
+namespace HrApp_WebAPI.Data.Entities.Pagination
 {
     public class DataShaper<T> : IDataShaper<T>
     {

@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
+using HrApp_WebAPI.BusinessLogic.Interfaces;
+using HrApp_WebAPI.Data.Entities.Companies;
+using HrApp_WebAPI.Data.Entities.Companies.Employees;
+using HrApp_WebAPI.Data.Entities.Pagination;
 using HrApp_WebAPI.DTOs;
-using HrApp_WebAPI.Entities;
-using HrApp_WebAPI.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -25,9 +27,10 @@ namespace HrApp_WebAPI.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public ActionResult<IEnumerable<Company>> GetCompanies([FromQuery] CompanyParameters companyParameters)
+        public ActionResult<IEnumerable<Company>> GetCompanies([FromQuery] QueryCompanyParameters companyParameters)
         {
-            return _companyService.GetCompanies(companyParameters);
+            var companies = _companyService.GetCompanies(companyParameters);
+            return Ok(companies);
         }
 
         [HttpGet("{id}")]
@@ -39,19 +42,16 @@ namespace HrApp_WebAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateCompany(Company company)
+        public async Task<ActionResult<Company>> CreateCompany(Company company)
         {
-            if (company == null)
+            await _companyService.CreateCompany(company);
+
+            if(await _companyService.SaveChangesAsync())
             {
-                return BadRequest();
+                return Ok(company);
             }
 
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            return await _companyService.CreateCompany(company);
+            return BadRequest("Failed to create a new company");
         }
 
         [HttpPut("{id}")]
@@ -62,6 +62,7 @@ namespace HrApp_WebAPI.Controllers
             {
                 return BadRequest("There is no company with this id");
             }
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -79,7 +80,13 @@ namespace HrApp_WebAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCompany(int id)
         {
-            return await _companyService.DeleteCompany(id);
+            await _companyService.DeleteCompany(id);
+
+            if (await _companyService.SaveChangesAsync())
+            {
+                return Ok("The company was deleted");
+            }
+            return BadRequest("Unsuccessful delete");
         }
 
         //------------------------------------------------------------------------------------------
@@ -93,12 +100,13 @@ namespace HrApp_WebAPI.Controllers
             {
                 return BadRequest("There is no employee with this id!");
             }
+
             return Ok(employee);
         }
 
         [HttpGet("employee/company/{companyId}")]
         [AllowAnonymous]
-        public async Task<IActionResult> GetAllEmployeesFromCompany(int companyId,[FromQuery]CompanyParameters companyParameters)
+        public async Task<ActionResult> GetAllEmployeesFromCompany(int companyId,[FromQuery]QueryCompanyParameters companyParameters)
         {
             return Ok(await _companyService.GetAllEmployeesFromCompany(companyId, companyParameters));
         }
@@ -106,23 +114,19 @@ namespace HrApp_WebAPI.Controllers
         [HttpPost("employee/{companyId}")]
         public async Task<ActionResult> AddEmployeeToCompany(int companyId, Employee employee)
         {
-            if (!ModelState.IsValid)
+            await _companyService.AddEmployeeToCompany(companyId, employee);
+
+            if (await _companyService.SaveChangesAsync())
             {
-                return BadRequest(ModelState);
+                return Ok(employee);
             }
 
-            return await _companyService.AddEmployeeToCompany(companyId, employee);
+            return BadRequest("Failed to add a new employee");
         }
 
-        [HttpPut("{companyId}/employee/{employeeId}")]
-        public async Task<ActionResult> EditEmployee(int companyId, int employeeId, EmployeeDto employeeDto)
+        [HttpPut("employee/{employeeId}")]
+        public async Task<ActionResult> EditEmployee(int employeeId, EmployeeDto employeeDto)
         {
-            var company = await _companyService.GetCompanyById(companyId);
-            if (company == null)
-            {
-                return BadRequest("There is no company with this id!");
-            }
-
             var employee = await _companyService.GetEmployeeById(employeeId);
             if (employee == null)
             {
@@ -141,7 +145,13 @@ namespace HrApp_WebAPI.Controllers
         [HttpDelete("employee/{id}")]
         public async Task<IActionResult> DeleteEmployee(int id)
         {
-            return await _companyService.DeleteCompany(id);
+            await _companyService.DeleteEmployee(id);
+
+            if (await _companyService.SaveChangesAsync())
+            {
+                return Ok("The employee was deleted");
+            }
+            return BadRequest("Unsuccessful delete");
         }
     }
 }

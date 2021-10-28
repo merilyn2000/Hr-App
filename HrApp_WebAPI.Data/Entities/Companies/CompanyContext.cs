@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using HrApp_WebAPI.Data.Entities.Companies.Employees;
+using HrApp_WebAPI.Data.Entities.Users;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace HrApp_WebAPI.Entities
+namespace HrApp_WebAPI.Data.Entities.Companies
 {
     public class CompanyContext : IdentityDbContext<User>
     {

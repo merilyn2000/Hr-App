@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Dynamic;
 
-namespace HrApp_WebAPI.Data.Entities
+namespace HrApp_WebAPI.Data.Entities.Pagination
 {
     public interface IDataShaper<T>
     {
