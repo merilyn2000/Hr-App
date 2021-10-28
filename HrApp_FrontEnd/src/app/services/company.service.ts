@@ -44,8 +44,8 @@ export class CompanyService {
     return this.httpClient.get<Employee>(url);
   }
 
-  getEmployees(companyId: number): Observable<Employee[]> {
-    const url = `${this.baseUrl}/employee/company/${companyId}`;
+  getEmployees(id: number): Observable<Employee[]> {
+    const url = `${this.baseUrl}/employee/company/${id}`;
     return this.httpClient.get<Employee[]>(url);
   }
 

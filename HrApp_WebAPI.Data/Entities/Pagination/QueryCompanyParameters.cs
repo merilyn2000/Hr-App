@@ -1,10 +1,10 @@
 ﻿using System;
 
-namespace HrApp_WebAPI.Entities
+namespace HrApp_WebAPI.Data.Entities.Pagination
 {
-    public class CompanyParameters : QueryStringParameters
+    public class QueryCompanyParameters : QueryStringParameters
     {
-        public CompanyParameters()
+        public QueryCompanyParameters()
         {
             OrderBy = "name";
         }

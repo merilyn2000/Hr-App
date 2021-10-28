@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace HrApp_WebAPI.Entities
+namespace HrApp_WebAPI.Data.Entities.Users
 {
     public class UserRegister
     {

@@ -1,5 +1,4 @@
 ﻿using HrApp_WebAPI.DTOs;
-using HrApp_WebAPI.Entities;
 using System.Threading.Tasks;
 
 namespace HrApp_WebAPI.Interfaces

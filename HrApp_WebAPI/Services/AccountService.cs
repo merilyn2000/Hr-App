@@ -1,5 +1,5 @@
-﻿using HrApp_WebAPI.DTOs;
-using HrApp_WebAPI.Entities;
+﻿using HrApp_WebAPI.Data.Entities.Users;
+using HrApp_WebAPI.DTOs;
 using HrApp_WebAPI.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -39,7 +39,7 @@ namespace HrApp_WebAPI.Services
             var result = await _userManager.CreateAsync(newUser, userRegisterDto.Password);
             if (!result.Succeeded)
             {
-                throw new Exception("User registration fails!");
+                throw new Exception("User registration fails !");
             }
 
             await _userManager.AddToRolesAsync(newUser, userRegisterDto.Roles);
@@ -52,7 +52,7 @@ namespace HrApp_WebAPI.Services
             var token = await _tokenService.CreateToken(userLoginDto);
 
             if (string.IsNullOrEmpty(token))
-                throw new Exception("Wrong username or password!");
+                throw new Exception("Wrong username or password !");
 
             return new LoggedInUser
             {

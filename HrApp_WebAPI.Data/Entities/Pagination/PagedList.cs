@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace HrApp_WebAPI.Entities
+namespace HrApp_WebAPI.Data.Entities.Pagination
 {
     public class PagedList<T> : List<T>
     {

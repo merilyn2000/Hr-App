@@ -26,14 +26,11 @@ export class EmployeeEditComponent implements OnInit {
       .subscribe(employee => this.employee = employee);
   }
 
-  editEmployee(firstName: string, lastName: string, PersonalIdentificationNumber: string, BirthPlace: string): void {
+  editEmployee(firstName: string, lastName: string): void {
     const Id = Number(this.route.snapshot.paramMap.get('id'));
     firstName = firstName;
     lastName = lastName;
-    PersonalIdentificationNumber = PersonalIdentificationNumber;
-    BirthPlace = BirthPlace;
-    this.companyService.editEmployee(Id, { firstName, lastName,
-                                            PersonalIdentificationNumber, BirthPlace} as Employee)
+    this.companyService.editEmployee(Id, { firstName, lastName } as Employee)
       .subscribe();
   }
 

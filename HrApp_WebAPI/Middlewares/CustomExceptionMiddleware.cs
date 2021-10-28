@@ -1,4 +1,4 @@
-﻿using HrApp_WebAPI.Entities;
+﻿using HrApp_WebAPI.Data.Entities;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -56,9 +56,6 @@ namespace HrApp_WebAPI.Middlewares
                 case UnauthorizedAccessException:
                     message = "Unauthorized exception error from the custom middleware";
                     break;
-                //default:
-                //    message = "Internal server error from the custom middleware";
-                //    break;
             }
 
             http.Response.StatusCode = errorCode;

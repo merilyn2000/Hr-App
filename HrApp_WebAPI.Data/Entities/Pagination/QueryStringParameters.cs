@@ -1,4 +1,4 @@
-﻿namespace HrApp_WebAPI.Entities
+﻿namespace HrApp_WebAPI.Data.Entities.Pagination
 {
     public abstract class QueryStringParameters
     {
@@ -17,6 +17,6 @@
             }
         }
         public string OrderBy { get; set; }
-
+        public string Fields { get; set; }
     }
 }

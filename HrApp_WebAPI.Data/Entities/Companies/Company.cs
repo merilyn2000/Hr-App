@@ -1,7 +1,8 @@
-﻿using System;
+﻿using HrApp_WebAPI.Data.Entities.Companies.Employees;
+using System;
 using System.Collections.Generic;
 
-namespace HrApp_WebAPI.Entities
+namespace HrApp_WebAPI.Data.Entities.Companies
 {
     public class Company
     {

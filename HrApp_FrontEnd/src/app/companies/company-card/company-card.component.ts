@@ -15,13 +15,7 @@ export class CompanyCardComponent implements OnInit {
               private route: ActivatedRoute) { }
 
   ngOnInit() {
-    this.getCompany();
-  }
-
-  getCompany() {
-    const id = Number(this.route.snapshot.paramMap.get('id'));
-    this.companyService.getCompany(id)
-      .subscribe(company => this.company = company);
+    this.companyService.getCompany(this.company.id);
   }
 
   deleteCompany() {

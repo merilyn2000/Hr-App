@@ -1,5 +1,5 @@
-﻿using HrApp_WebAPI.DTOs;
-using HrApp_WebAPI.Entities;
+﻿using HrApp_WebAPI.Data.Entities.Users;
+using HrApp_WebAPI.DTOs;
 using HrApp_WebAPI.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;

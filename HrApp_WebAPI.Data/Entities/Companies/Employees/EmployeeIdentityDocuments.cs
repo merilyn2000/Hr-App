@@ -1,4 +1,6 @@
-﻿namespace HrApp_WebAPI.Entities
+﻿using HrApp_WebAPI.Data.Entities.Companies.Employees;
+
+namespace HrApp_WebAPI.Data.Entities.Companies.Employees
 {
     public class EmployeeIdentityDocuments
     {

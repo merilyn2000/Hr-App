@@ -1,24 +1,29 @@
-﻿using HrApp_WebAPI.Entities;
-using HrApp_WebAPI.Interfaces;
+﻿using HrApp_WebAPI.BusinessLogic.Interfaces;
+using HrApp_WebAPI.Data.Entities.Companies;
+using HrApp_WebAPI.Data.Entities.Companies.Employees;
+using HrApp_WebAPI.Data.Entities.Pagination;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace HrApp_WebAPI.Services
+namespace HrApp_WebAPI.BusinessLogic.Services
 {
     public class CompanyService : ICompanyService
     {
         private readonly CompanyContext _companyContext;
+        private readonly IDataShaper<Employee> _dataShaper;
 
-        public CompanyService(CompanyContext context)
+        public CompanyService(CompanyContext context, IDataShaper<Employee> dataShaper)
         {
             _companyContext = context;
+            _dataShaper = dataShaper;
         }
 
-        public ActionResult<IEnumerable<Company>> GetCompanies([FromQuery] CompanyParameters companyParameters)
+        public IEnumerable<Company> GetCompanies(QueryCompanyParameters companyParameters)
         {
             if (!companyParameters.Year)
             {
@@ -34,7 +39,7 @@ namespace HrApp_WebAPI.Services
             var sort = new Sorting();
             sort.SearchByName(ref companies, companyParameters.Name);
             sort.ApplySort(ref companies, companyParameters.OrderBy);
-
+            
             var companiesPagination = PagedList<Company>.ToPagedList(companies, companyParameters.PageNumber,
                                                                     companyParameters.PageSize);
 
@@ -48,51 +53,20 @@ namespace HrApp_WebAPI.Services
                 companiesPagination.HasPrevious
             };
 
-            //Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
             return (companiesPagination);
         }
 
         public async Task<Company> GetCompanyById(int id)
         {
             return await _companyContext.Companies.Include(x => x.Employees).FirstOrDefaultAsync(x => x.Id == id);
-
-            //var company = await _context.Companies.Include(c => c.Employees).FirstOrDefaultAsync(x => x.Id == id);
-            //if (company == null)
-            //{
-            //    throw new Exception("There is no company with this id");
-            //}
-
-            //return new ObjectResult(company);
         }
 
-        public async Task<IActionResult> CreateCompany(Company company)
+        public async Task CreateCompany(Company company)
         {
-            _companyContext.Companies.Add(company);
-
-            await _companyContext.SaveChangesAsync();
-
-            return new ObjectResult(company);
+            await _companyContext.Companies.AddAsync(company);
         }
 
-        public async Task<ActionResult> EditCompany(int id, Company company)
-        {
-            var foundCompany = await _companyContext.Companies.FirstOrDefaultAsync(x => x.Id == id);
-            if (foundCompany == null)
-            {
-                throw new Exception("There is no company with this id !");
-            }
-
-
-            foundCompany.CompanyName = company.CompanyName;
-            foundCompany.CompanyAddress = company.CompanyAddress;
-            foundCompany.CompanyInformation = company.CompanyInformation;
-
-            await _companyContext.SaveChangesAsync();
-
-            return new OkObjectResult(foundCompany);
-        }
-
-        public async Task<IActionResult> DeleteCompany(int id)
+        public async Task DeleteCompany(int id)
         {
             var company = await _companyContext.Companies.FindAsync(id);
             if (company == null)
@@ -101,9 +75,6 @@ namespace HrApp_WebAPI.Services
             }
 
             _companyContext.Companies.Remove(company);
-            await _companyContext.SaveChangesAsync();
-
-            return new NoContentResult();
         }
 
         //------------------------------------------------------------------------------------------
@@ -111,33 +82,26 @@ namespace HrApp_WebAPI.Services
         public async Task<Employee> GetEmployeeById(int id)
         {
             return await _companyContext.Employees.FirstOrDefaultAsync(e => e.EmployeeId == id);
-            //var employee = await _companyContext.Employees.FirstOrDefaultAsync(e => e.EmployeeId == id);
-            //if (employee == null)
-            //{
-            //    throw new Exception("There is no company with this id");
-            //}
-
-            //return new ObjectResult(employee);
         }
 
-        public async Task<IEnumerable<Employee>> GetAllEmployeesFromCompany(int companyId)
+        public async Task<IEnumerable<ExpandoObject>> GetAllEmployeesFromCompany(int companyId,QueryCompanyParameters companyParameters)
         {
-            return await _companyContext.Companies.Where(company => company.Id == companyId)
-                                                    .Include(company => company.Employees)
-                                                    .Select(company => company.Employees)
-                                                    .FirstOrDefaultAsync();
+            var employees = await _companyContext.Companies
+                    .Where(company => company.Id == companyId)
+                   .Include(company => company.Employees)
+                   .Select(company => company.Employees)
+                   .FirstOrDefaultAsync();
+
+            return _dataShaper.ShapeData(employees, companyParameters.Fields);
         }
 
-        public async Task<ActionResult> AddEmployeeToCompany(int companyId, Employee employee)
+        public async Task AddEmployeeToCompany(int companyId, Employee employee)
         {
             var company = await _companyContext.Companies
                             .Include(x => x.Employees)
                             .FirstOrDefaultAsync(x => x.Id == companyId);
 
             company.Employees.Add(employee);
-            await _companyContext.SaveChangesAsync();
-
-            return new ObjectResult(employee);
         }
 
         public async Task<ActionResult> EditEmployee(int id, Employee employee)
@@ -152,14 +116,15 @@ namespace HrApp_WebAPI.Services
             return new OkObjectResult(foundEmployee);
         }
 
-        public async Task<IActionResult> DeleteEmployee(int id)
+        public async Task DeleteEmployee(int id)
         {
             var employee = await _companyContext.Employees.FindAsync(id);
-           
-            _companyContext.Employees.Remove(employee);
-            await _companyContext.SaveChangesAsync();
+            if (employee == null)
+            {
+                throw new Exception("There is no employee with this id !");
+            }
 
-            return new NoContentResult();
+            _companyContext.Remove(employee);
         }
 
         public async Task<bool> SaveChangesAsync()

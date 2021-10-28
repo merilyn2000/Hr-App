@@ -24,11 +24,13 @@ export class CompanyListComponent implements OnInit {
     })
   }
 
-  addCompany(companyName: string,companyAddress: string, companyInformation: string,) {
+  addCompany(companyName: string,companyAddress: string, companyInformation: string,
+              companyLogo: string) {
     companyName = companyName;
     companyAddress = companyAddress;
     companyInformation = companyInformation;
-    this.companyService.addCompany({ companyName,companyAddress,companyInformation } as Company)
+    companyLogo = companyLogo;
+    this.companyService.addCompany({ companyName, companyAddress, companyInformation, companyLogo } as Company)
       .subscribe(company => {
         this.companies.push(company);
         window.location.reload();
