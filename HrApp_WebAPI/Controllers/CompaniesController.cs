@@ -17,8 +17,7 @@ namespace HrApp_WebAPI.Controllers
         private readonly ICompanyService _companyService;
         private readonly IMapper _mapper;
 
-        public CompaniesController(ICompanyService companyService, CompanyContext companyContext,
-                                    IMapper autoMapperProfile)
+        public CompaniesController(ICompanyService companyService, IMapper autoMapperProfile)
         {
             _companyService = companyService;
             _mapper = autoMapperProfile;
@@ -99,10 +98,9 @@ namespace HrApp_WebAPI.Controllers
 
         [HttpGet("employee/company/{companyId}")]
         [AllowAnonymous]
-        public async Task<IEnumerable<Employee>> GetAllEmployeesFromCompany(int companyId)
+        public async Task<IActionResult> GetAllEmployeesFromCompany(int companyId,[FromQuery]CompanyParameters companyParameters)
         {
-            return await _companyService.GetAllEmployeesFromCompany(companyId);
-
+            return Ok(await _companyService.GetAllEmployeesFromCompany(companyId, companyParameters));
         }
 
         [HttpPost("employee/{companyId}")]

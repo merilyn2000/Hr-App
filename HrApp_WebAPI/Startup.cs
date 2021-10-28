@@ -1,3 +1,4 @@
+using HrApp_WebAPI.Data.Entities;
 using HrApp_WebAPI.Entities;
 using HrApp_WebAPI.Extensions;
 using HrApp_WebAPI.Helpers;
@@ -53,6 +54,7 @@ namespace Mini_HR_App
             services.AddScoped<ICompanyService, CompanyService>();
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<IAdministratorService, AdministratorService>();
+            services.AddScoped<IDataShaper<Employee>, DataShaper<Employee>>();
             services.AddAutoMapper(typeof(AutoMapperProfile).Assembly);
         }
 

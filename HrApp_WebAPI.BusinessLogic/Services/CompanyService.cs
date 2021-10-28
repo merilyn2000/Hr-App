@@ -1,9 +1,11 @@
-﻿using HrApp_WebAPI.Entities;
+﻿using HrApp_WebAPI.Data.Entities;
+using HrApp_WebAPI.Entities;
 using HrApp_WebAPI.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -12,13 +14,15 @@ namespace HrApp_WebAPI.Services
     public class CompanyService : ICompanyService
     {
         private readonly CompanyContext _companyContext;
+        private readonly IDataShaper<Employee> _dataShaper;
 
-        public CompanyService(CompanyContext context)
+        public CompanyService(CompanyContext context, IDataShaper<Employee> dataShaper)
         {
             _companyContext = context;
+            _dataShaper = dataShaper;
         }
 
-        public ActionResult<IEnumerable<Company>> GetCompanies([FromQuery] CompanyParameters companyParameters)
+        public ActionResult<IEnumerable<Company>> GetCompanies(CompanyParameters companyParameters)
         {
             if (!companyParameters.Year)
             {
@@ -34,7 +38,7 @@ namespace HrApp_WebAPI.Services
             var sort = new Sorting();
             sort.SearchByName(ref companies, companyParameters.Name);
             sort.ApplySort(ref companies, companyParameters.OrderBy);
-
+            
             var companiesPagination = PagedList<Company>.ToPagedList(companies, companyParameters.PageNumber,
                                                                     companyParameters.PageSize);
 
@@ -48,21 +52,12 @@ namespace HrApp_WebAPI.Services
                 companiesPagination.HasPrevious
             };
 
-            //Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
             return (companiesPagination);
         }
 
         public async Task<Company> GetCompanyById(int id)
         {
             return await _companyContext.Companies.Include(x => x.Employees).FirstOrDefaultAsync(x => x.Id == id);
-
-            //var company = await _context.Companies.Include(c => c.Employees).FirstOrDefaultAsync(x => x.Id == id);
-            //if (company == null)
-            //{
-            //    throw new Exception("There is no company with this id");
-            //}
-
-            //return new ObjectResult(company);
         }
 
         public async Task<IActionResult> CreateCompany(Company company)
@@ -111,21 +106,17 @@ namespace HrApp_WebAPI.Services
         public async Task<Employee> GetEmployeeById(int id)
         {
             return await _companyContext.Employees.FirstOrDefaultAsync(e => e.EmployeeId == id);
-            //var employee = await _companyContext.Employees.FirstOrDefaultAsync(e => e.EmployeeId == id);
-            //if (employee == null)
-            //{
-            //    throw new Exception("There is no company with this id");
-            //}
-
-            //return new ObjectResult(employee);
         }
 
-        public async Task<IEnumerable<Employee>> GetAllEmployeesFromCompany(int companyId)
+        public async Task<IEnumerable<ExpandoObject>> GetAllEmployeesFromCompany(int companyId,CompanyParameters companyParameters)
         {
-            return await _companyContext.Companies.Where(company => company.Id == companyId)
-                                                    .Include(company => company.Employees)
-                                                    .Select(company => company.Employees)
-                                                    .FirstOrDefaultAsync();
+            var employees = await _companyContext.Companies
+                    .Where(company => company.Id == companyId)
+                   .Include(company => company.Employees)
+                   .Select(company => company.Employees)
+                   .FirstOrDefaultAsync();
+
+            return _dataShaper.ShapeData(employees, companyParameters.Fields);
         }
 
         public async Task<ActionResult> AddEmployeeToCompany(int companyId, Employee employee)
