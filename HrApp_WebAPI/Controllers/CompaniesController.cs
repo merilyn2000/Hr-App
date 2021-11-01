@@ -6,7 +6,11 @@ using HrApp_WebAPI.Data.Entities.Pagination;
 using HrApp_WebAPI.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
 namespace HrApp_WebAPI.Controllers
@@ -29,6 +33,8 @@ namespace HrApp_WebAPI.Controllers
         [AllowAnonymous]
         public ActionResult<IEnumerable<Company>> GetCompanies([FromQuery] QueryCompanyParameters companyParameters)
         {
+            
+
             var companies = _companyService.GetCompanies(companyParameters);
             return Ok(companies);
         }
@@ -37,6 +43,7 @@ namespace HrApp_WebAPI.Controllers
         [AllowAnonymous]
         public async Task<ActionResult<Company>> GetCompanyById(int id)
         {
+            
             var company = await _companyService.GetCompanyById(id);
             return Ok(company);
         }
@@ -104,11 +111,11 @@ namespace HrApp_WebAPI.Controllers
             return Ok(employee);
         }
 
-        [HttpGet("employee/company/{companyId}")]
+        [HttpGet("employee/company/{id}")]
         [AllowAnonymous]
-        public async Task<ActionResult> GetAllEmployeesFromCompany(int companyId,[FromQuery]QueryCompanyParameters companyParameters)
+        public async Task<ActionResult> GetAllEmployeesFromCompany(int id,[FromQuery]QueryCompanyParameters companyParameters)
         {
-            return Ok(await _companyService.GetAllEmployeesFromCompany(companyId, companyParameters));
+            return Ok(await _companyService.GetAllEmployeesFromCompany(id, companyParameters));
         }
 
         [HttpPost("employee/{companyId}")]
@@ -152,6 +159,40 @@ namespace HrApp_WebAPI.Controllers
                 return Ok("The employee was deleted");
             }
             return BadRequest("Unsuccessful delete");
+        }
+
+        [HttpPost("upload"), DisableRequestSizeLimit]
+        public IActionResult Upload()
+        {
+            try
+            {
+                var files = Request.Form.Files;
+                var folderName = Path.Combine("Resources", "Images");
+                var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
+
+                if (files.Any(f => f.Length == 0))
+                {
+                    return BadRequest();
+                }
+
+                foreach (var file in files)
+                {
+                    var fileName = ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim('"');
+                    var fullPath = Path.Combine(pathToSave, fileName);
+                    var dbPath = Path.Combine(folderName, fileName);
+
+                    using (var stream = new FileStream(fullPath, FileMode.Create))
+                    {
+                        file.CopyTo(stream);
+                    }
+                }
+
+                return Ok("All the files are successfully uploaded.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Internal server error");
+            }
         }
     }
 }

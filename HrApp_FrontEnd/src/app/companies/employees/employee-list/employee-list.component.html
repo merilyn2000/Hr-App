@@ -39,11 +39,21 @@
               <mat-icon matSuffix>sentiment_very_satisfied</mat-icon>
             </mat-form-field>
           </p>
+          <p (onUploadFinished)="uploadFinished($event)">
+            <input type="file" #file placeholder="Choose file" (change)="uploadFile(file.files)" style="display:none;" multiple>
+            <button mat-button (click)="file.click()">Upload a new photo</button>
+              <span class="upload" *ngIf="progress > 0">
+                {{progress}}%
+              </span>
+              <span class="upload" *ngIf="message">
+                {{message}}
+              </span>
+          </p>
         </mat-card-content>
         <mat-divider inset></mat-divider>
         <mat-card-actions>
-          <button mat-button (click)="addEmployee(firstName.value, lastName.value,
-                                                PersonalIdentificationNumber.value, birthPlace.value)">
+          <button type="submit" mat-button (click)="addEmployee(firstName.value, lastName.value,
+                                                PersonalIdentificationNumber.value, birthPlace.value, file.value)">
             <mat-icon>check_circle</mat-icon>
             Save
           </button>

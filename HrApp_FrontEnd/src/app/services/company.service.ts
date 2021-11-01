@@ -2,8 +2,11 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
+import { EmployeeListComponent } from '../companies/employees/employee-list/employee-list.component';
 import { Company } from '../models/company';
 import { Employee } from '../models/employee';
+import { EmployeeContacts } from '../models/employeeContacts';
+
 
 @Injectable({
   providedIn: 'root'
@@ -62,5 +65,10 @@ export class CompanyService {
   deleteEmployee(id: number): Observable<Employee> {
     const url = `${this.baseUrl}/employee/${id}`;
     return this.httpClient.delete<Employee>(url);
+  }
+
+  getEmployeeContacts(employeeId: number): Observable<EmployeeContacts[]>{
+    const url = `${this.baseUrl}/employee/contacts/${employeeId}`;
+    return this.httpClient.get<EmployeeContacts[]>(url);
   }
 }

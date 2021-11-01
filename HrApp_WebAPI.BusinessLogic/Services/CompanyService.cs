@@ -1,4 +1,5 @@
-﻿using HrApp_WebAPI.BusinessLogic.Interfaces;
+﻿using HrApp_WebAPI.BusinessLogic.Email2;
+using HrApp_WebAPI.BusinessLogic.Interfaces;
 using HrApp_WebAPI.Data.Entities.Companies;
 using HrApp_WebAPI.Data.Entities.Companies.Employees;
 using HrApp_WebAPI.Data.Entities.Pagination;
@@ -16,11 +17,13 @@ namespace HrApp_WebAPI.BusinessLogic.Services
     {
         private readonly CompanyContext _companyContext;
         private readonly IDataShaper<Employee> _dataShaper;
+        private readonly IEmailSender _emailSender;
 
-        public CompanyService(CompanyContext context, IDataShaper<Employee> dataShaper)
+        public CompanyService(CompanyContext context, IDataShaper<Employee> dataShaper, IEmailSender emailSender)
         {
             _companyContext = context;
             _dataShaper = dataShaper;
+            _emailSender = emailSender;
         }
 
         public IEnumerable<Company> GetCompanies(QueryCompanyParameters companyParameters)
@@ -34,6 +37,7 @@ namespace HrApp_WebAPI.BusinessLogic.Services
                                                         && c.DateOfEstablishment.Year <= companyParameters.DateOfEstablishment2)
                                                 .OrderBy(c => c.CompanyName)
                                                 .Include(c => c.Employees)
+                                                .ThenInclude(Employee => Employee.Contacts)
                                                 .Skip((companyParameters.PageNumber - 1) * companyParameters.PageSize)
                                                 .Take(companyParameters.PageSize);
             var sort = new Sorting();
@@ -81,7 +85,16 @@ namespace HrApp_WebAPI.BusinessLogic.Services
 
         public async Task<Employee> GetEmployeeById(int id)
         {
-            return await _companyContext.Employees.FirstOrDefaultAsync(e => e.EmployeeId == id);
+            return await _companyContext.Employees.Include(e=>e.Contacts).FirstOrDefaultAsync(e => e.EmployeeId == id);
+        }
+
+        public async Task<IEnumerable<EmployeeContacts>> GetEmployeeContacts(int id)
+        {
+            return await _companyContext.Employees
+                .Where(employee => employee.EmployeeId == id)
+                .Include(employee => employee.Contacts)
+                .Select(employee => employee.Contacts)
+                .FirstOrDefaultAsync();
         }
 
         public async Task<IEnumerable<ExpandoObject>> GetAllEmployeesFromCompany(int companyId,QueryCompanyParameters companyParameters)
@@ -97,6 +110,10 @@ namespace HrApp_WebAPI.BusinessLogic.Services
 
         public async Task AddEmployeeToCompany(int companyId, Employee employee)
         {
+            var message = new Message(new string[] { $"{employee.PersonalIdentificationNumber}" },
+                                                    $"UCMS by AROBS", "Welcome to UCMS ! :)");
+            _emailSender.SendEmail(message);
+
             var company = await _companyContext.Companies
                             .Include(x => x.Employees)
                             .FirstOrDefaultAsync(x => x.Id == companyId);

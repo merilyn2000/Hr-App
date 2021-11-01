@@ -2,6 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Company } from 'src/app/models/company';
 import { Employee } from 'src/app/models/employee';
+import { EmployeeContacts } from 'src/app/models/employeeContacts';
 import { CompanyService } from 'src/app/services/company.service';
 
 @Component({
@@ -11,12 +12,15 @@ import { CompanyService } from 'src/app/services/company.service';
 })
 export class EmployeeCardComponent implements OnInit {
   @Input() public employee!: Employee;
+  @Input() public employeeContacts!: EmployeeContacts[];
+  @Input() public company!: Company;
+
 
   constructor(private companyService: CompanyService,
               private route: ActivatedRoute) { }
 
   ngOnInit() {
-    this.getEmployee();
+    this.companyService.getEmployee(this.company?.id);
   }
 
   getEmployee() {
@@ -30,4 +34,7 @@ export class EmployeeCardComponent implements OnInit {
     window.location.reload();
   }
 
+  public createImgPath = (serverPath: string) => {
+    return `https://localhost:44360/companies/${serverPath}`;
+  }
 }

@@ -1,5 +1,6 @@
 import { Location } from '@angular/common';
-import { Component, Input, OnInit } from '@angular/core';
+import { HttpClient, HttpEventType } from '@angular/common/http';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Company } from 'src/app/models/company';
 import { Employee } from 'src/app/models/employee';
@@ -15,9 +16,15 @@ export class EmployeeListComponent implements OnInit {
   @Input() employee! : Employee;
   @Input() company! : Company;
 
+  public progress!: number;
+  public message!: string;
+  @Output() public onUploadFinished = new EventEmitter();
+
+  public response!: { dbPath: 'DESKTOP-94QO6UM'};
   public constructor(private companyService: CompanyService,
                       private route: ActivatedRoute,
-                      private location: Location) { }
+                      private location: Location,
+                      private http: HttpClient) { }
 
   public ngOnInit(): void {
      this.getEmployees();
@@ -37,13 +44,15 @@ export class EmployeeListComponent implements OnInit {
     })
   }
 
-   addEmployee(firstName: string, lastName: string, PersonalIdentificationNumber: string, BirthPlace: string){
+   addEmployee(firstName: string, lastName: string, PersonalIdentificationNumber: string,
+              BirthPlace: string, photo: string){
      firstName = firstName;
      lastName = lastName;
      PersonalIdentificationNumber = PersonalIdentificationNumber;
      BirthPlace = BirthPlace
-     this.companyService.addEmployee(this.company.id, { firstName, lastName,
-                                                        PersonalIdentificationNumber, BirthPlace } as Employee)
+     photo = this.response?.dbPath;
+     this.companyService.addEmployee(this.company.id, { firstName, lastName, PersonalIdentificationNumber,
+                                                        photo, BirthPlace } as Employee)
        .subscribe(employee => {
          this.employees.push(employee);
        });
@@ -52,5 +61,33 @@ export class EmployeeListComponent implements OnInit {
 
   goBack() {
     this.location.back();
+  }
+
+  public uploadFile = (files: any) => {
+    if (files.length === 0) {
+      return;
+    }
+
+    let filesToUpload : File[] = files;
+    const formData = new FormData();
+
+    Array.from(filesToUpload).map((file, index) => {
+      return formData.append('file'+index, file, file.name);
+    });
+
+    this.http.post('https://localhost:44360/companies/upload', formData, {reportProgress: true, observe: 'events',
+                                                                          responseType: 'text'})
+      .subscribe(event => {
+        if (event.type === HttpEventType.UploadProgress)
+          this.progress = Math.round(100 * event.loaded / event.total!);
+        else if (event.type === HttpEventType.Response) {
+          this.message = 'Upload success.';
+          this.onUploadFinished.emit(event.body);
+        }
+      });
+  }
+
+  public uploadFinished = (event: any) => {
+    this.response = event;
   }
 }
