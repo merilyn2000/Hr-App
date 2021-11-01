@@ -14,7 +14,8 @@ export interface Employee {
   PersonalIdentificationNumber: string;
   BirthDate: Date;
   BirthPlace: string;
-  // employeePersonalDatas: EmployeePersonalDatas;
+  photo: string;
+  employeePersonalDatas: EmployeePersonalDatas;
   employeeAddresses: EmployeeAddresses[];
   employeeContacts: EmployeeContacts[];
   employeeIdentityDocuments: EmployeeIdentityDocuments[];

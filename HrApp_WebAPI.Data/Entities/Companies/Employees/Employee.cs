@@ -11,11 +11,13 @@ namespace HrApp_WebAPI.Data.Entities.Companies.Employees
         public string PersonalIdentificationNumber { get; set; }
         public DateTime BirthDate { get; set; }
         public string BirthPlace { get; set; }
+        //public EmployeePersonalDatas PersonalDatas { get; set; }
         public List<EmployeeAddresses> Addresses { get; set; }
         public List<EmployeeContacts> Contacts { get; set; }
         public List<EmployeeIdentityDocuments> IdentityDocuments { get; set; }
         public List<EmployeeBankData> BankData { get; set; }
         public EmployeeDependents Dependents { get; set; }
         public List<EmployeeContracts> Contracts { get; set; }
+        public string Photo { get; set; }
     }
 }

@@ -1,3 +1,4 @@
+using HrApp_WebAPI.BusinessLogic.Email2;
 using HrApp_WebAPI.BusinessLogic.Interfaces;
 using HrApp_WebAPI.BusinessLogic.Services;
 using HrApp_WebAPI.Data.Entities.Companies;
@@ -11,12 +12,16 @@ using HrApp_WebAPI.Middlewares;
 using HrApp_WebAPI.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Logging;
+using System.IO;
 using System.Text.Json;
 
 namespace Mini_HR_App
@@ -47,6 +52,17 @@ namespace Mini_HR_App
                 o.JsonSerializerOptions.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;
             });
 
+            services.Configure<FormOptions>(o => {
+                o.ValueLengthLimit = int.MaxValue;
+                o.MultipartBodyLengthLimit = int.MaxValue;
+                o.MemoryBufferThreshold = int.MaxValue;
+            });
+
+            var emailConfig = _config
+            .GetSection("EmailConfiguration")
+            .Get<EmailConfiguration>();
+            services.AddSingleton(emailConfig);
+
             services.AddCors();
             IdentityModelEventSource.ShowPII = true;
             services.AddAuthentication();
@@ -59,7 +75,8 @@ namespace Mini_HR_App
             services.AddScoped<ICompanyService, CompanyService>();
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<IAdministratorService, AdministratorService>();
-            services.AddScoped<IDataShaper<Employee>, DataShaper<Employee>>();
+            services.AddScoped<IDataShaper<Employee>, DataShaper<Employee>>(); 
+            services.AddScoped<IEmailSender, EmailSender>();
             services.AddAutoMapper(typeof(AutoMapperProfile).Assembly);
         }
 
@@ -75,6 +92,14 @@ namespace Mini_HR_App
             app.ConfigureCustomExceptionMiddleware();
 
             app.UseHttpsRedirection();
+
+            app.UseStaticFiles();
+            app.UseStaticFiles(new StaticFileOptions()
+            {
+                FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), @"Resources")),
+                RequestPath = new PathString("/Resources")
+            });
+
             app.UseRouting();
 
             app.UseCors(policy => policy

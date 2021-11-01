@@ -15,6 +15,7 @@ namespace HrApp_WebAPI.BusinessLogic.Interfaces
         Task DeleteCompany(int id);
 
         Task<Employee> GetEmployeeById(int id);
+        Task<IEnumerable<EmployeeContacts>> GetEmployeeContacts(int id);
         Task<IEnumerable<ExpandoObject>> GetAllEmployeesFromCompany(int companyId,QueryCompanyParameters companyParameters);
         Task AddEmployeeToCompany(int companyId, Employee employee);
         Task DeleteEmployee(int id);
